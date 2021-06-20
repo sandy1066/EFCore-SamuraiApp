@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SamuraiApp.Domain;
 using System;
 
@@ -14,7 +15,12 @@ namespace SamuraiApp.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=PC-SANDY\\SQLEXPRESS;Initial Catalog=Samurai-App-Db;Integrated Security=True;Pooling=False");
+            optionsBuilder.UseSqlServer("Data Source=PC-SANDY\\SQLEXPRESS;Initial Catalog=Samurai-App-Db;Integrated Security=True;Pooling=False",
+                                        options => options.MaxBatchSize(100))
+                .LogTo(Console.WriteLine, 
+                        new[] {DbLoggerCategory.Database.Command.Name}, 
+                        LogLevel.Information)
+                 .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
